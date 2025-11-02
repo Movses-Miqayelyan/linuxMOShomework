@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <string.h>
+#include <iostream>
+#include <algorithm>
+
+void init(int argc, char** argv)
+{
+    if (argc != 2) {
+        printf("Error: %s\n", argv[0]);
+        exit(1);
+    }
+
+    int fd = open(argv[1], O_RDONLY);
+    if (fd < 0) {
+        printf("Open failed\n");
+        exit(1);
+    }
+
+    if(dup2(fd, STDIN_FILENO) == -1) {
+        perror("dup2");
+        exit(1);
+    }
+    if(close(fd) == -1) {
+        perror("close");
+        exit(1);
+    }
+}
+
+int main(int argc, char** argv)
+{
+    init(argc, argv);
+
+    std::string i;
+    std::cin >> i;
+
+    std::string rev = i;
+    std::reverse(rev.begin(), rev.end());
+
+    std::cout << rev << std::endl;
+
+    return 0;
+}
